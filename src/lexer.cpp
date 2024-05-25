@@ -39,11 +39,13 @@ namespace lexer {
         if (state == 1 || state == 2 || state == 4)
             return 1;   // real
         else if (state == 5) {
+            if (lexeme.size() > 32)
+                return -2;  // 标识符长度超过32
             if (lexeme == "sin" || lexeme == "cos" || lexeme == "tg" || lexeme == "ctg" || lexeme == "log" || lexeme == "lg" || lexeme == "ln")
                 return 3;   // keyword
             if (lexeme == "PI" || lexeme == "E")
                 return 4;   // constant
-            return 2;
+            return 2;       // identifier
         }
         else if (state == 6) {
             return 5;   // operation
@@ -75,7 +77,11 @@ namespace lexer {
             case 6:
                 std::cout << "< Delimiter\t" << lexeme << "\t>" << std::endl;
                 return true;
+            case -2:
+                std::cout << "Invalid identifier: " << lexeme << ", identifier length should not exceed 32" << std::endl;
+                return false;
             default:
+                std::cerr << "Unrecognized lexeme: \'" << lexeme << '\'' << std::endl;
                 return false;
         }
     }
@@ -85,32 +91,42 @@ namespace lexer {
         char ch;
         std::string lexeme;
 
+        // 仍有字符输入
         while (in >> ch) {
+            // 将字符转换为索引
             if ((index = char2index(ch)) == -1) {
-                std::cerr << "Unrecognized character: \'" << ch << '\'' << std::endl;
+                std::cerr << "Unrecognized character: \'" << ch << "\'\tASCII: <" << (int)ch << ">" << std::endl;
                 return;
             }
+
+            // 接受字符，状态转移
+            lexeme.push_back(ch);
             pre_state = state;
             state = move[state][index];
-            // td::cout << "nowstat:" << state << std::endl;
+
+            // 转移到一个非法的状态(预示着当前单词识别结束)
             if (state == 8) {
-                if (!print_lexeme(pre_state, lexeme)) {
-                    std::cerr << "Unrecognized lexeme: \'" << ch << '\'' << std::endl;
+                if (lexeme.size() > 1)  //如果size == 1,则说明第一个字符就是非法字符，此时应直接打印错误信息
+                    lexeme.pop_back();  //吐出刚才引起转移到非法状态的字符
+
+                // 检查当前单词是否合法
+                if (!print_lexeme(pre_state, lexeme))
                     return ;
-                }
-                state = move[0][index];
-                if (state == 8) {
-                    std::cerr << "Unrecognized lexeme: \'" << ch << '\'' << std::endl;
-                    return ;
-                }
                 lexeme.clear();
+                
+                // 识别一个新的单词, 状态从0开始转移
+                lexeme.push_back(ch);
+                state = move[0][index];
+                if (state == 8) {   // 如果第一个字符就转移到了一个非法状态
+                    std::cerr << "Unrecognized lexeme: \'" << ch << '\'' << std::endl;
+                    return ;
+                }
             }
-            lexeme.push_back(ch);
         }
+
+        // 无字符输入，处理剩下的字符
         if (!lexeme.empty())
-            if (!print_lexeme(state, lexeme)) {
-                std::cerr << "Unrecognized lexeme: \'" << ch << '\'' << std::endl;
+            if (!print_lexeme(state, lexeme))
                 return ;
-            }
     }
 }
