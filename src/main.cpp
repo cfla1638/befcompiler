@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "lexer.h"
+#include "parser_td.h"
 #include "cmdparser.h"
 
 using namespace std;
@@ -73,11 +74,7 @@ int main(int argc, char** argv)
             in.open(cmd.get_argument_value("-f"), std::ios::in);
             if (in.is_open()) {
                 lexer::tokenize(in, out, symbols);
-                for (auto i : out)
-                    cout << i << " ";
-                cout << endl << endl;
-                for (auto i : symbols)
-                    cout << i.first << " " << i.second.str << endl;
+                parser_td::parse(out, symbols);
             }
             else
                 std::cout << "fail to open file" << std::endl;
@@ -97,11 +94,7 @@ int main(int argc, char** argv)
             cout << "\033[F  \n";     // 消除最后一个“>> ”提示符
             istringstream in(code);
             lexer::tokenize(in, out, symbols);
-            for (auto i : out)
-                cout << i << " ";
-            cout << endl << endl;
-            for (auto i : symbols)
-                cout << i.first << " " << i.second.str << endl;
+            parser_td::parse(out, symbols);
         }
     }
 

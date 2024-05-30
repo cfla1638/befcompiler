@@ -45,8 +45,11 @@
  *  36   <S1>           5
  *  37   <number>       5
  *  
- *  --   real           6       实数
- *  --   identifier     7       标识符
+ *  仅在预测分析表中使用
+ *  101   real           6       实数
+ *  102   identifier     7       标识符
+ *  103   constant
+ *  104   keyword
  * 
  *  1001
  */
@@ -66,7 +69,7 @@ public:
 
     std::uint16_t id = 0;   // 无符号的16位整数类型，取值范围为0到65535
     std::string str;        // 字符串表示
-    int type;
+    int type;               // type = 6 real type = 7 identifier
     static int next_id;
 };
 
