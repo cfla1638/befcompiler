@@ -74,7 +74,8 @@ int main(int argc, char** argv)
             in.open(cmd.get_argument_value("-f"), std::ios::in);
             if (in.is_open()) {
                 lexer::tokenize(in, out, symbols);
-                parser_td::parse(out, symbols);
+                parser_td::st_node_t * root = parser_td::parse(out, symbols);
+                parser_td::print_syntax_tree(root, "", true, symbols);
             }
             else
                 std::cout << "fail to open file" << std::endl;
@@ -94,7 +95,8 @@ int main(int argc, char** argv)
             cout << "\033[F  \n";     // 消除最后一个“>> ”提示符
             istringstream in(code);
             lexer::tokenize(in, out, symbols);
-            parser_td::parse(out, symbols);
+            parser_td::st_node_t * root = parser_td::parse(out, symbols);
+            parser_td::print_syntax_tree(root, "", true, symbols);
         }
     }
 

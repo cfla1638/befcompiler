@@ -1,4 +1,4 @@
-// è¯­æ³•åˆ†æå™¨
+// Óï·¨·ÖÎöÆ÷
 #ifndef H_PARSER
 #define H_PARSER
 
@@ -9,7 +9,7 @@
 
 
 namespace parser_td {
-    // è¯­æ³•æ ‘å®šä¹‰
+    // Óï·¨Ê÷¶¨Òå
     class st_node_t
     {
     public:
@@ -20,14 +20,15 @@ namespace parser_td {
         std::vector<st_node_t *> children;
     };
 
-    // é¢„æµ‹åˆ†æè¡¨
+    // Ô¤²â·ÖÎö±í
     class pred_table_t {
     public:
-        pred_table_t();     // åˆå§‹åŒ–é¢„æµ‹åˆ†æè¡¨
+        pred_table_t();     // ³õÊ¼»¯Ô¤²â·ÖÎö±í
         std::vector<std::uint16_t> base[12][17];
     };
 
-    void parse(std::vector<uint16_t> in, const std::map<std::uint16_t, Symbol> &symbols);
+    st_node_t * parse(std::vector<uint16_t> in, const std::map<std::uint16_t, Symbol> &symbols);
+    void print_syntax_tree(st_node_t* node, std::string prefix, bool is_last, const std::map<std::uint16_t, Symbol> &symbols);
 }
 
 #endif

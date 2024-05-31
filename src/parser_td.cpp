@@ -52,6 +52,19 @@ namespace parser_td {
         base[10][2].push_back(37);
         base[11][2].push_back(101);
 
+        base[2][3].push_back(30);
+        base[2][3].push_back(29);
+
+        base[4][3].push_back(32);
+        base[4][3].push_back(31);
+
+        base[6][3].push_back(35);
+        base[6][3].push_back(34);
+
+        base[9][3].push_back(2);
+        base[9][3].push_back(28);
+        base[9][3].push_back(3);
+
         base[10][3].push_back(2);
         base[10][3].push_back(28);
         base[10][3].push_back(3);
@@ -106,6 +119,7 @@ namespace parser_td {
 
         base[7][8].push_back(8);
         base[7][8].push_back(35);
+        base[7][8].push_back(3);
 
         base[2][9].push_back(30);
         base[2][9].push_back(29);
@@ -166,7 +180,7 @@ namespace parser_td {
                     return -1;
             }
             else 
-                return -1;   // æŸ¥æ‰¾å¤±è´¥
+                return -1;   // ²éÕÒÊ§°Ü
         }
 
         switch (id) {
@@ -204,7 +218,7 @@ namespace parser_td {
                 return 10;
             case 22:
                 return 9;
-            // ä»¥ä¸‹ä¸ºéç»ˆç»“ç¬¦è½¬æ¢ä¸ºè¡Œæ ‡
+            // ÒÔÏÂÎª·ÇÖÕ½á·û×ª»»ÎªĞĞ±ê
             case 26:
                 return 0;
             case 27:
@@ -315,7 +329,14 @@ namespace parser_td {
             return -1;
     }
 
-    std::string id2symbol(uint16_t id) {
+    std::string id2symbol(uint16_t id, const std::map<std::uint16_t, Symbol> &symbols) {
+        if (id > 1000) {
+            auto iter = symbols.find(id);
+            if (iter != symbols.end())
+                return iter->second.str;
+            else 
+                return "";   // ²éÕÒÊ§°Ü
+        }
         switch (id) {
             case 0:
                 return "#";
@@ -394,7 +415,7 @@ namespace parser_td {
             case 37:
                 return "<number>";
             default:
-                return ""; // è¿”å›ç©ºå­—ç¬¦ä¸²è¡¨ç¤ºæœªçŸ¥ID
+                return ""; // ·µ»Ø¿Õ×Ö·û´®±íÊ¾Î´ÖªID
         }
 }
 
@@ -402,7 +423,7 @@ namespace parser_td {
         return (id >= 26 && id <= 37);
     }
 
-    void parse(std::vector<uint16_t> in, const std::map<std::uint16_t, Symbol> &symbols) {
+    st_node_t * parse(std::vector<uint16_t> in, const std::map<std::uint16_t, Symbol> &symbols) {
         pred_table_t pred;
         std::stack<uint16_t> symbol_stack;
         std::stack<st_node_t *> node_stack;
@@ -427,32 +448,28 @@ namespace parser_td {
             node_stack.pop();
 
             // debug
-            // std::cout << id2symbol(cur_id) << std::endl;
+            // std::cout << "cur_input:\t" << id2symbol(*iter) << std::endl;
+            // std::cout << "cur_pred:\t" << id2symbol(cur_id) << std::endl;
             
 
-            if (is_nonterminals(cur_id)) {      // éç»ˆç»“ç¬¦
+            if (is_nonterminals(cur_id)) {      // ·ÇÖÕ½á·û
                 row = id2index(cur_id, symbols);
-                col = id2index(*iter, symbols);
-
-                // debug
-                // std::cout << "row: " << row << std::endl;
-                // std::cout << "col: " << col << std::endl;
-                
+                col = id2index(*iter, symbols);               
 
                 if (row < 0 || col < 0) {
                     std::cerr << "Parser: Unable to convert symbol to index" << std::endl;
-                    return ;
+                    return nullptr;
                 }
 
                 if (pred.base[row][col].empty()) {
                     std::cerr << "Parser: Table lookup failed, unable to predict next token sequence" << std::endl;
                     std::cerr << "Current nonterminals: " << cur_id << std::endl;
                     std::cerr << "Current token: " << *iter << std::endl;
-                    return ;
+                    return nullptr;
                 }
 
                 if (pred.base[row][col][0] != 25) {
-                    std::vector<st_node_t *> rev_node;  // ç”¨äºæš‚å­˜ç”Ÿæˆçš„æ ‘èŠ‚ç‚¹æŒ‡é’ˆ
+                    std::vector<st_node_t *> rev_node;  // ÓÃÓÚÔİ´æÉú³ÉµÄÊ÷½ÚµãÖ¸Õë
                     for (auto it = pred.base[row][col].rbegin(); it != pred.base[row][col].rend(); it++) {
                         uint16_t tmp_id = *it;
                         if (*it >= 101 && *it <= 104)
@@ -465,21 +482,46 @@ namespace parser_td {
                         // debug
                         // std::cout << "push " << id2symbol(tmp_id) << std::endl;
                     }
-                    for (auto it = rev_node.rbegin(); it != rev_node.rend(); it++)
+                    // debug
+                    // std::cout << id2symbol(cur_id) << " -> ";
+
+                    for (auto it = rev_node.rbegin(); it != rev_node.rend(); it++) {
                         cur_node->children.push_back(*it);
+                        
+                        // debug
+                        // std::cout << id2symbol((*it)->id) << " ";
+                    }
+                    // debug
+                    // std::cout << std::endl;
                 }
             }
-            else {      // ç»ˆç»“ç¬¦
+            else {      // ÖÕ½á·û
                 if (cur_id == *iter) {      // match
-                    std::cout << "Match: " << id2symbol(cur_id) << std::endl;
+                    std::cout << "Match: " << id2symbol(cur_id, symbols) << std::endl;
                     iter++;
                 }
                 else {
-                    std::cerr << "Unable to match " << id2symbol(cur_id) << std::endl;
-                    return ;
+                    std::cerr << "Unable to match " << id2symbol(cur_id, symbols) << std::endl;
+                    return nullptr;
                 }
             }
             // getchar();
+        }
+        return root;
+    }
+
+    // ´òÓ¡Óï·¨Ê÷
+    void print_syntax_tree(st_node_t* node, std::string prefix, bool is_last, const std::map<std::uint16_t, Symbol> &symbols) {
+        if (node == nullptr)
+            return ;
+        std::cout << prefix;
+        std::cout << (is_last ? "©¸©¤©¤ " : "©À©¤©¤ ");
+        std::cout << id2symbol(node->id, symbols) << std::endl;
+
+        for (size_t i = 0; i < node->children.size(); ++i) {
+            bool is_last_child = (i == node->children.size() - 1);
+            std::string child_prefix = prefix + (is_last ? "    " : "©¦   ");
+            print_syntax_tree(node->children[i], child_prefix, is_last_child, symbols);
         }
     }
 }
