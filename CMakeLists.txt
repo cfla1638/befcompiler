@@ -6,6 +6,7 @@ set(SOURCES
 	src/lexer.cpp
 	src/main.cpp
 	src/parser_td.cpp
+	src/parser.cpp
 )
 
 add_executable(befcompiler ${SOURCES})

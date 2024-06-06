@@ -1,6 +1,6 @@
 // Óï·¨·ÖÎöÆ÷
-#ifndef H_PARSER
-#define H_PARSER
+#ifndef H_PARSER_TD
+#define H_PARSER_TD
 
 #include <iostream>
 #include <vector>
