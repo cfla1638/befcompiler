@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <map>
 
 /**
  * @brief 符号表解决方案
@@ -70,6 +71,9 @@
  *  43   <factor>       43
  *  44   <sign>         44
  *  45   <number>       45
+ * 
+ *  46   shift          46
+ *  47   reduce         47
  *  
  *  仅在预测分析表中使用
  *  101   real           6
@@ -97,8 +101,9 @@ public:
     std::string str;        // 字符串表示
     int type;               // type = 6 real type = 7 identifier
     static int next_id;
-};
 
+    // 后添加的属性
+};
 
 
 #endif

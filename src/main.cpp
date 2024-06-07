@@ -99,6 +99,41 @@ int main(int argc, char** argv)
             parser_td::print_syntax_tree(root, "", true, symbols);
         }
     }
+    else if (cmd.has_argument("-p")) {
+        vector<uint16_t> out;
+        map<uint16_t, Symbol> symbols;
+
+        // 自底向上的语法分析
+        if (cmd.has_argument("-f")) {
+            ifstream in;
+            in.open(cmd.get_argument_value("-f"), std::ios::in);
+            if (in.is_open()) {
+                lexer::tokenize(in, out, symbols);
+                parser_td::st_node_t * root = parser_td::parse(out, symbols);
+                parser_td::print_syntax_tree(root, "", true, symbols);
+            }
+            else
+                std::cout << "fail to open file" << std::endl;
+        }
+        else {
+            string code;
+            string line;
+
+            cout << ">> ";  // 显示初始提示符
+            while (getline(cin, line)) {
+                if (line.empty()) {
+                    break;  // 如果输入的行为空，则结束输入
+                }
+                code += line + '\n';  // 将输入的行添加到代码字符串中
+                cout << ">> ";  // 显示下一行的提示符
+            }
+            cout << "\033[F  \n";     // 消除最后一个“>> ”提示符
+            istringstream in(code);
+            lexer::tokenize(in, out, symbols);
+            parser_td::st_node_t * root = parser_td::parse(out, symbols);
+            parser_td::print_syntax_tree(root, "", true, symbols);
+        }
+    }
 
     return 0;
 }
