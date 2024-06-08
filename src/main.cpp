@@ -6,9 +6,12 @@
 
 #include "lexer.h"
 #include "parser_td.h"
+#include "parser_bd.h"
 #include "cmdparser.h"
 
 using namespace std;
+
+void real_main(int, char**);
 
 int main(int argc, char** argv)
 {
@@ -24,6 +27,31 @@ int main(int argc, char** argv)
      * -f <filename>: 从文件中输入
      * 默认: 从命令行中输入
      */
+
+    // real_main(argc, argv);
+    vector<uint16_t> out;
+    map<uint16_t, Symbol> symbols;
+    string code;
+    string line;
+
+    cout << ">> ";  // 显示初始提示符
+    while (getline(cin, line)) {
+        if (line.empty()) {
+            break;  // 如果输入的行为空，则结束输入
+        }
+        code += line + '\n';  // 将输入的行添加到代码字符串中
+        cout << ">> ";  // 显示下一行的提示符
+    }
+    cout << "\033[F  \n";     // 消除最后一个“>> ”提示符
+    istringstream in(code);
+    lexer::tokenize(in, out, symbols);
+    parser::st_node_t * root = parser::build_syntax_tree(out, symbols);
+    parser::print_syntax_tree(root, "", true, symbols);
+
+    return 0;
+}
+
+void real_main(int argc, char** argv) {
     cmd_parser::cmd_parser cmd(argc, argv);
     if (argc == 1 || cmd.has_argument("-h") || cmd.has_argument("--help")) {
         // 打印帮助信息
@@ -134,6 +162,4 @@ int main(int argc, char** argv)
             parser_td::print_syntax_tree(root, "", true, symbols);
         }
     }
-
-    return 0;
 }

@@ -172,9 +172,9 @@ namespace parser_td {
         if (id > 1000) {
             auto iter = symbols.find(id);
             if (iter != symbols.end()) {
-                if (iter->second.type == 6)
+                if (iter->second.type == 101)
                     return 2;
-                else if (iter->second.type == 7)
+                else if (iter->second.type == 102)
                     return 0;
                 else 
                     return -1;
@@ -417,7 +417,7 @@ namespace parser_td {
             default:
                 return ""; // ·µ»Ø¿Õ×Ö·û´®±íÊ¾Î´ÖªID
         }
-}
+    }
 
     inline bool is_nonterminals(uint16_t id) {
         return (id >= 26 && id <= 37);

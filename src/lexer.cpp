@@ -156,7 +156,7 @@ namespace lexer {
                 if (in_symbols) 
                     token = id;
                 else {
-                    s.set(lexeme, 6);
+                    s.set(lexeme, 101);
                     symbols[s.id] = s;
                     token = s.id;
                 }
@@ -173,7 +173,7 @@ namespace lexer {
                 if (in_symbols) 
                     token = id;
                 else {
-                    s.set(lexeme, 7);
+                    s.set(lexeme, 102);
                     symbols[s.id] = s;
                     token = s.id;
                 }
