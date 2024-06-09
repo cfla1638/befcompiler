@@ -174,6 +174,10 @@ namespace lexer {
                     token = id;
                 else {
                     s.set(lexeme, 102);
+                    
+                    // 语义分析时添加的代码, 后续可以修改的更加优雅
+                    s.name = lexeme;
+
                     symbols[s.id] = s;
                     token = s.id;
                 }

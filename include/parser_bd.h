@@ -26,7 +26,7 @@ namespace parser {
     void print_syntax_tree(st_node_t* node, std::string prefix, bool is_last, const std::map<std::uint16_t, Symbol> &symbols);
 
     // 语法分析 & 语义分析
-    void parse(std::vector<uint16_t> in, const std::map<std::uint16_t, Symbol> &symbols);
+    bool parse(std::vector<uint16_t> in, std::map<std::uint16_t, Symbol> &symbols);
 }
 
 

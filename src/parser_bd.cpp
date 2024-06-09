@@ -1,5 +1,7 @@
 #include <stack>
+#include <cmath>
 #include "parser_bd.h"
+#include "symbol.h"
 
 namespace parser {
     // 动作表：正数代表是移进到该状态，负数代表用某文法展开式规约，9999代表acc
@@ -226,7 +228,7 @@ namespace parser {
     }
 
     st_node_t * build_syntax_tree(std::vector<uint16_t> in, const std::map<std::uint16_t, Symbol> &symbols) {
-        std::stack<uint16_t> symbol_stack;  // 符号栈
+        std::stack<std::uint16_t> symbol_stack;  // 符号栈
         std::stack<int> state_stack;        // 状态栈
         std::stack<st_node_t *> node_stack; // 没有双亲的树节点栈
 
@@ -288,6 +290,396 @@ namespace parser {
             else {      // 查表错误
                 std::cerr << "Parser: failed to look up the action table" << std::endl;
                 return nullptr;
+            }
+        }
+    }
+
+    // 语义分析(当前规约的文法产生式id, 文法产生式左部的符号表id, 符号表右部的参数, 符号表)
+    bool analyze_semantics(int cfg_id, int new_sym_id, std::vector<std::uint16_t> paras, std::map<std::uint16_t, Symbol> &symbols) {
+        //std::cout << "call 语义分析" << std::endl;
+        switch (cfg_id){
+            case 1:
+                //std::cout << "reduce 1" << std::endl;
+                return true;
+            case 2:
+                //std::cout << "reduce 2" << std::endl;
+                return true;
+            case 3:
+                //std::cout << "reduce 3" << std::endl;
+                return true;
+            case 4:         // <statement> -> Identifier = <expr>;
+                //std::cout << "reduce 4" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    symbols[paras[1]].val = symbols[paras[0]].val;
+                    symbols[paras[1]].exist_val = true;
+                    symbols[paras[1]].str = std::to_string(symbols[paras[1]].val);
+                }
+                else {
+                    symbols[paras[1]].exist_val = false;
+                    symbols[paras[1]].str = symbols[paras[0]].str;
+                }
+                return true;
+            case 5:         // <statement> -> ?<expr>;
+                //std::cout << "reduce 5" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    std::cout << symbols[paras[0]].val << std::endl;
+                }
+                else {
+                    std::cout << symbols[paras[0]].str << std::endl;
+                }
+                return true;
+            case 6:         // <expr> -> <expr> + <term>
+                //std::cout << "reduce 6" << std::endl;
+                if (symbols[paras[0]].exist_val && symbols[paras[1]].exist_val) {
+                    symbols[new_sym_id].val = symbols[paras[1]].val + symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = symbols[paras[1]].str + "+" + symbols[paras[0]].str;
+                }
+                return true;
+            case 7:         // <expr> -> <expr> - <term>
+                //std::cout << "reduce 7" << std::endl;
+                if (symbols[paras[0]].exist_val && symbols[paras[1]].exist_val) {
+                    symbols[new_sym_id].val = symbols[paras[1]].val - symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = symbols[paras[1]].str + "-" + symbols[paras[0]].str;
+                }
+                return true;
+            case 8:         // <expr> -> <term>
+                //std::cout << "reduce 8" << std::endl;
+                symbols[new_sym_id].val = symbols[paras[0]].val;
+                symbols[new_sym_id].exist_val = symbols[paras[0]].exist_val;
+                symbols[new_sym_id].str = symbols[paras[0]].str;
+                return true;
+            case 9:         // <term> -> <term> * <factor>
+                //std::cout << "reduce 9" << std::endl;
+                if (symbols[paras[0]].exist_val && symbols[paras[1]].exist_val) {
+                    symbols[new_sym_id].val = symbols[paras[1]].val * symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = symbols[paras[1]].str + "*" + symbols[paras[0]].str;
+                }
+                return true;
+            case 10:        // <term> -> <term> / <factor>
+                //std::cout << "reduce 10" << std::endl;
+                if (symbols[paras[0]].exist_val && symbols[paras[1]].exist_val) {
+                    if (symbols[paras[0]].val == 0) {
+                        std::cerr << "/ : The divisor cannot be 0" << std::endl;
+                        return false;
+                    }
+                    symbols[new_sym_id].val = symbols[paras[1]].val / symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = symbols[paras[1]].str + "/" + symbols[paras[0]].str;
+                }
+                return true;
+            case 11:        // <term> -> <factor>
+                //std::cout << "reduce 11" << std::endl;
+                symbols[new_sym_id].val = symbols[paras[0]].val;
+                symbols[new_sym_id].exist_val = symbols[paras[0]].exist_val;
+                symbols[new_sym_id].str = symbols[paras[0]].str;
+                return true;
+            case 12:        // <factor> -> log(<sign>, <sign>)
+                //std::cout << "reduce 12" << std::endl;
+                if (symbols[paras[0]].exist_val && symbols[paras[1]].exist_val) {
+                    if (symbols[paras[0]].val <= 0 || symbols[paras[1]].val <= 0) {
+                        std::cerr << "log(, ): illegal argument" << std::endl;
+                        return false;
+                    }
+                    symbols[new_sym_id].val = std::log(symbols[paras[0]].val) / std::log(symbols[paras[1]].val);
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = std::string("log(") + symbols[paras[1]].str + ", " + symbols[paras[0]].str + ")";
+                }
+                return true;
+            case 13:        // <factor> -> log(<sign>)
+                //std::cout << "reduce 13" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    if (symbols[paras[0]].val <= 0) {
+                        std::cerr << "log(): illegal argument" << std::endl;
+                        return false;
+                    }
+                    symbols[new_sym_id].val = std::log2(symbols[paras[0]].val);
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = std::string("log(") + symbols[paras[0]].str + ")";
+                }
+                return true;
+            case 14:        // <factor> -> <sign>^<sign>
+                //std::cout << "reduce 14" << std::endl;
+                if (symbols[paras[0]].exist_val && symbols[paras[1]].exist_val) {
+                    symbols[new_sym_id].val = std::pow(symbols[paras[1]].val, symbols[paras[0]].val);
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = symbols[paras[1]].str + '^' + symbols[paras[0]].str;
+                }
+                return true;
+            case 15:        // <factor> -> Keyword(<sign>)
+                //std::cout << "reduce 15" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    switch (paras[1]) {
+                        case 18:    // sin
+                            symbols[new_sym_id].val = std::sin(symbols[paras[0]].val);
+                            break;
+                        case 19:    // cos
+                            symbols[new_sym_id].val = std::cos(symbols[paras[0]].val);
+                            break;
+                        case 20:    // tg
+                            if (std::cos(symbols[paras[0]].val) == 0) {
+                                std::cerr << "tg(): illegal argument" << std::endl;
+                                return false;
+                            }
+                            symbols[new_sym_id].val = std::tan(symbols[paras[0]].val);
+                            break;
+                        case 21:    // ctg
+                            if (std::sin(symbols[paras[0]].val) == 0) {
+                                std::cerr << "ctg(): illegal argument" << std::endl;
+                                return false;
+                            }
+                            symbols[new_sym_id].val = 1.0 / std::tan(symbols[paras[0]].val);
+                            break;
+                        case 23:    // lg
+                            if (symbols[paras[0]].val <= 0) {
+                                std::cerr << "lg(): illegal argument" << std::endl;
+                                return false;
+                            }
+                            symbols[new_sym_id].val = std::log10(symbols[paras[0]].val);
+                            break;
+                        case 24:    // ln
+                            if (symbols[paras[0]].val <= 0) {
+                                std::cerr << "ln(): illegal argument" << std::endl;
+                                return false;
+                            }
+                            symbols[new_sym_id].val = std::log(symbols[paras[0]].val);
+                            break;
+                    }
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                    symbols[new_sym_id].exist_val = true;
+                }
+                else {
+                    switch (paras[1]) {
+                        case 18:    // sin
+                            symbols[new_sym_id].str = std::string("sin(") + symbols[paras[0]].str + ")";
+                            break;
+                        case 19:    // cos
+                            symbols[new_sym_id].str = std::string("cos(") + symbols[paras[0]].str + ")";
+                            break;
+                        case 20:    // tg
+                            symbols[new_sym_id].str = std::string("tg(") + symbols[paras[0]].str + ")";
+                            break;
+                        case 21:    // ctg
+                            symbols[new_sym_id].str = std::string("ctg(") + symbols[paras[0]].str + ")";
+                            break;
+                        case 23:    // lg
+                            symbols[new_sym_id].str = std::string("lg(") + symbols[paras[0]].str + ")";
+                            break;
+                        case 24:    // ln
+                            symbols[new_sym_id].str = std::string("ln(") + symbols[paras[0]].str + ")";
+                            break;
+                    }
+                    symbols[new_sym_id].exist_val = false;
+                }
+                return true;
+            case 16:        // <factor> -> <sign>
+                //std::cout << "reduce 16" << std::endl;
+                symbols[new_sym_id].val = symbols[paras[0]].val;
+                symbols[new_sym_id].exist_val = symbols[paras[0]].exist_val;
+                symbols[new_sym_id].str = symbols[paras[0]].str;
+                return true;
+            case 17:        // <sign> -> +<number>
+                //std::cout << "reduce 17" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    symbols[new_sym_id].val = symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = symbols[paras[0]].str;
+                }
+                return true;
+            case 18:        // <sign> -> -<number>
+                //std::cout << "reduce 18" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    symbols[new_sym_id].val = -symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = std::string("-") + symbols[paras[0]].str;
+                }
+                return true;
+            case 19:        // <sign> -> <number>
+                //std::cout << "reduce 19" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    symbols[new_sym_id].val = symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = symbols[paras[0]].str;
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = symbols[paras[0]].str;
+                }
+                //std::cout << "end: reduce 19" << std::endl;
+                return true;
+            case 20:        // <sign> -> (<expr>)
+                //std::cout << "reduce 20" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    symbols[new_sym_id].val = symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = std::string("(") + symbols[paras[0]].str + ")";
+                }
+                return true;
+            case 21:        // <sign> -> +(<expr>)
+                //std::cout << "reduce 21" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    symbols[new_sym_id].val = symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = std::string("(") + symbols[paras[0]].str + ")";
+                }
+                return true;
+            case 22:        // <sign> -> -(<expr>)
+                //std::cout << "reduce 22" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    symbols[new_sym_id].val = -symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = std::string("-(") + symbols[paras[0]].str + ")";
+                }
+                return true;
+            case 23:        // <number> -> Identifier
+                //std::cout << "reduce 23" << std::endl;
+                if (symbols[paras[0]].exist_val) {
+                    symbols[new_sym_id].val = symbols[paras[0]].val;
+                    symbols[new_sym_id].exist_val = true;
+                    symbols[new_sym_id].str = std::to_string(symbols[new_sym_id].val);
+                }
+                else {
+                    symbols[new_sym_id].exist_val = false;
+                    symbols[new_sym_id].str = symbols[paras[0]].str;
+                }
+                return true;
+            case 24:        // <number> -> constant
+                //std::cout << "reduce 24" << std::endl;
+                if (paras[0] == 16) {       // PI
+                    symbols[new_sym_id].str = "3.141592";
+                    symbols[new_sym_id].val = 3.141592;
+                    symbols[new_sym_id].exist_val = true;
+                }
+                else if (paras[0] == 17) {  // E
+                    symbols[new_sym_id].str = "2.718281";
+                    symbols[new_sym_id].val = 2.718281;
+                    symbols[new_sym_id].exist_val = true;
+                }
+                symbols[new_sym_id].exist_val = true;
+                return true;
+            case 25:        // <number> -> real
+                //std::cout << "reduce 25" << std::endl;
+                symbols[paras[0]].val = std::stod(symbols[paras[0]].str);
+                symbols[paras[0]].exist_val = true;
+                symbols[new_sym_id].str = symbols[paras[0]].str;
+                symbols[new_sym_id].val = symbols[paras[0]].val;
+                symbols[new_sym_id].exist_val = true;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // 语法分析 & 语义分析
+    bool parse(std::vector<uint16_t> in, std::map<std::uint16_t, Symbol> &symbols) {
+        std::stack<std::uint16_t> symbol_stack;  // 符号栈
+        std::stack<int> state_stack;        // 状态栈
+        std::stack<std::uint16_t> nonterminals_stack; // 非终结符栈
+
+        symbol_stack.push(0);
+        state_stack.push(1);
+        auto iter = in.begin();
+
+        int col, action;
+        while (true) {
+            col = id2index(*iter, symbols);
+            action = action_table[state_stack.top()][col];
+
+            if (action == 9999) {   // acc
+                return true;
+            }
+            else if (action > 0) {  // 移进
+                state_stack.push(action);
+                symbol_stack.push(*iter);
+                std::cout << "Match: " << id2symbol(*iter, symbols) << std::endl;
+                iter++;
+            }
+            else if (action < 0) {  // 规约
+                int cur_cfg = -action;
+                Symbol new_symbol(id2symbol(cfg_left[cur_cfg], symbols), cfg_left[cur_cfg]);
+                symbols[new_symbol.id] = new_symbol;
+
+                std::vector<std::uint16_t> paras;   // 参数栈，用于向语义分析函数传递参数
+                for (auto i = cfg_right[cur_cfg].rbegin(); i != cfg_right[cur_cfg].rend(); i++) {
+                    state_stack.pop();
+                    if (!nonterminals_stack.empty() && symbols[nonterminals_stack.top()].type == *i) {
+                        paras.push_back(nonterminals_stack.top());
+                        nonterminals_stack.pop();
+                    }
+                    else if (*i == 101 || *i == 102 || *i == 103 || *i == 104) {
+                        paras.push_back(symbol_stack.top());
+                    }
+                    symbol_stack.pop();
+                }
+
+                // 语义分析
+                if (!analyze_semantics(cur_cfg, new_symbol.id, paras, symbols)) {
+                    std::cerr << "Parser: Semantic analysis failed" << std::endl;
+                    return false;
+                }
+                symbol_stack.push(cfg_left[cur_cfg]);
+                nonterminals_stack.push(new_symbol.id);
+
+                int next_state = goto_table[state_stack.top()][id2index(cfg_left[cur_cfg], symbols)];
+                if (!next_state) {
+                    std::cerr << "Parser: failed to look up the goto table" << std::endl;
+                    return false;
+                }
+                state_stack.push(next_state);
+            }
+            else {      // 查表错误
+                std::cerr << "Parser: failed to look up the action table" << std::endl;
+                return false;
             }
         }
     }

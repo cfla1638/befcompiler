@@ -85,14 +85,12 @@
 class Symbol
 {
 public:
-    Symbol() = default;
+    Symbol() {id = next_id; next_id++;};
     Symbol(std::string str, int type) : str(str), type(type) { id = next_id; next_id++; }
 
     void set(std::string _str, int _type) {
         str = _str;
         type = _type;
-        id = next_id;
-        next_id++;
     }
 
     std::uint16_t id = 0;   // 无符号的16位整数类型，取值范围为0到65535
@@ -101,6 +99,9 @@ public:
     static int next_id;
 
     // 后添加的属性
+    bool exist_val = false;
+    double val;
+    std::string name;
 };
 
 

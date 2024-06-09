@@ -45,9 +45,10 @@ int main(int argc, char** argv)
     cout << "\033[F  \n";     // 消除最后一个“>> ”提示符
     istringstream in(code);
     lexer::tokenize(in, out, symbols);
-    parser::st_node_t * root = parser::build_syntax_tree(out, symbols);
-    parser::print_syntax_tree(root, "", true, symbols);
-
+    parser::parse(out, symbols);
+    
+    // parser::st_node_t * root = parser::build_syntax_tree(out, symbols);
+    // parser::print_syntax_tree(root, "", true, symbols);
     return 0;
 }
 
