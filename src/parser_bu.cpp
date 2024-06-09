@@ -1,7 +1,4 @@
-#include <stack>
-#include <cmath>
-#include "parser_bd.h"
-#include "symbol.h"
+#include "parser_bu.h"
 
 namespace parser {
     // 动作表：正数代表是移进到该状态，负数代表用某文法展开式规约，9999代表acc
@@ -641,7 +638,7 @@ namespace parser {
             else if (action > 0) {  // 移进
                 state_stack.push(action);
                 symbol_stack.push(*iter);
-                std::cout << "Match: " << id2symbol(*iter, symbols) << std::endl;
+                // std::cout << "Match: " << id2symbol(*iter, symbols) << std::endl;
                 iter++;
             }
             else if (action < 0) {  // 规约

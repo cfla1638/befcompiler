@@ -1,5 +1,3 @@
-#include <iostream>
-#include <string>
 #include "lexer.h"
 
 int Symbol::next_id = 1001;

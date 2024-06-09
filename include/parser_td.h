@@ -1,10 +1,13 @@
-// 语法分析器
+// 自顶向下(Top-down)的语法分析器
 #ifndef H_PARSER_TD
 #define H_PARSER_TD
 
 #include <iostream>
 #include <vector>
 #include <map>
+#include <stack>
+#include <string>
+
 #include "symbol.h"
 
 

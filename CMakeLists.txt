@@ -5,7 +5,7 @@ project(befcompiler)
 set(SOURCES
 	src/lexer.cpp
 	src/parser_td.cpp
-	src/parser_bd.cpp
+	src/parser_bu.cpp
 	src/main.cpp
 )
 

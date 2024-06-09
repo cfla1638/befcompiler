@@ -1,3 +1,4 @@
+// 用于解析命令行参数
 #ifndef H_CMDPARSER
 #define H_CMDPARSER
 

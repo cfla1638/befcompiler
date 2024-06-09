@@ -1,6 +1,3 @@
-#include <stack>
-#include <string>
-#include <string.h>
 #include "parser_td.h"
 
 namespace parser_td {
