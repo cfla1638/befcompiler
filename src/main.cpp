@@ -173,6 +173,20 @@ int main(int argc, char** argv)
             parser::parse(out, symbols);
         }
     }
+    else {
+        // 打印帮助信息
+        cout << "-h, --help: 显示帮助信息" << endl;
+
+        cout << endl << "功能:" << endl;
+        cout << "-l: 词法分析, 并打印结果" << endl;
+        cout << "--ptd : 语法分析，自顶向下(top-down)" << endl;
+        cout << "--pbu : 语法分析，自底向上(bottom-up)" << endl;
+        cout << "-c, --calc : 计算初等函数语言的执行结果(语义分析)" << endl;
+
+        cout << endl << "输入方式:" << endl;
+        cout << "-f <filename>: 从文件中输入" << endl;
+        cout << "默认: 从命令行中输入" << endl;
+    }
 
     return 0;
 }
