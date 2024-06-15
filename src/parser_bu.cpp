@@ -11,7 +11,6 @@ namespace parser {
     std::uint16_t cfg_left[26] = {0, 38, 39, 39, 40, 40, 41, 41, 41, 42, 42, 42, 43, 43, 43, 43, 43, 44, 44, 44, 44, 44, 44, 45, 45, 45};
 
     // 所有文法展开式的右部
-
     std::vector<std::uint16_t> cfg_right[26] = {
         {}, //0
         {39}, //1
@@ -41,6 +40,7 @@ namespace parser {
         {101}, //25
     };
 
+    // 将ID转换为移进规约分析表(Action Table / Goto Table)的列坐标
     int id2index(std::uint16_t id, const std::map<std::uint16_t, Symbol> &symbols) {
         if (id > 1000) {
             auto iter = symbols.find(id);
@@ -115,6 +115,7 @@ namespace parser {
         }
     }
 
+    // 将ID转换为其字符串表示
     std::string id2symbol(uint16_t id, const std::map<std::uint16_t, Symbol> &symbols) {
         if (id > 1000) {
             auto iter = symbols.find(id);
@@ -205,6 +206,7 @@ namespace parser {
         }
     }
 
+    // 判断是否为非终结符
     inline bool is_nonterminals(std::uint16_t id) {
         return (id >= 38 && id <= 45);
     }

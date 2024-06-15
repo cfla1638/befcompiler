@@ -1,4 +1,5 @@
 // 编码：GB2312
+#include <conio.h>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -29,6 +30,9 @@ int main(int argc, char** argv)
 
     cmd_parser::cmd_parser cmd(argc, argv);
     if (argc == 1 || cmd.has_argument("-h") || cmd.has_argument("--help")) {
+        if (argc == 1)
+            cout << "请使用命令行参数运行程序!" << endl << endl;
+
         // 打印帮助信息
         cout << "-h, --help: 显示帮助信息" << endl;
 
@@ -41,6 +45,9 @@ int main(int argc, char** argv)
         cout << endl << "输入方式:" << endl;
         cout << "-f <filename>: 从文件中输入" << endl;
         cout << "默认: 从命令行中输入" << endl;
+
+        if (argc == 1)
+            getch();
     }
     else if (cmd.has_argument("-l")) {
         // 词法分析

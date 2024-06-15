@@ -39,6 +39,8 @@ make
 
 ## 3 程序使用
 
+### 3.1 命令行参数
+
 ~~~cpp
 -h, --help : 帮助文档
 
@@ -55,7 +57,35 @@ make
 
 
 
+### 3.2 示例：
 
+词法分析（从命令行中输入）：
+
+![image-20240615153619513](https://cdn.jsdelivr.net/gh/cfla1638/Img/202406151541633.png) 
+
+
+
+词法分析（从文件中输入）：
+
+![image-20240615153732118](https://cdn.jsdelivr.net/gh/cfla1638/Img/202406151541257.png) 
+
+
+
+语法分析（自顶向下）
+
+![image-20240615153859991](https://cdn.jsdelivr.net/gh/cfla1638/Img/202406151541029.png)
+
+
+
+语法分析（自底向上）
+
+![image-20240615154008112](https://cdn.jsdelivr.net/gh/cfla1638/Img/202406151541522.png) 
+
+
+
+语义分析：
+
+![image-20240615154110556](https://cdn.jsdelivr.net/gh/cfla1638/Img/202406151541673.png)  
 
 ## 4 代码结构说明
 
@@ -877,48 +907,48 @@ real : 21
 
 ### 7.7 一个分析示例
 
-| 剩余输入      | 符号栈                     | 状态栈        | 动作 |
-| ------------- | -------------------------- | ------------- | ---- |
-| x=1;y=2;?x+y; | #                          | 1             | s4   |
-| =1;y=2;?x+y;  | #x                         | 1 4           | s8   |
-| 1;y=2;?x+y;   | #x=                        | 1 4 8         | s21  |
-| ;y=2;?x+y;    | #x=1                       | 1 4 8 21      | r25  |
-| ;y=2;?x+y;    | #x=<number>                | 1 4 8 17      | r19  |
-| ;y=2;?x+y;    | #x=<sign>                  | 1 4 8 13      | r16  |
-| ;y=2;?x+y;    | #x=<factor>                | 1 4 8 11      | r11  |
-| ;y=2;?x+y;    | #x=<term>                  | 1 4 8 10      | r8   |
-| ;y=2;?x+y;    | #x=<expr>                  | 1 4 8 52      | s53  |
-| y=2;?x+y;     | #x=<expr>;                 | 1 4 8 52 53   | r4   |
-| y=2;?x+y;     | #<statement>               | 1 3           | r2   |
-| y=2;?x+y;     | #<program>                 | 1 2           | s7   |
-| =2;?x+y;      | #<program>y                | 1 2 7         | s8   |
-| 2;?x+y;       | #<program>y=               | 1 2 7 8       | s21  |
-| ;?x+y;        | #<program>y=2              | 1 2 7 8 21    | r25  |
-| ;?x+y;        | #<program>y=<number>       | 1 2 7 8 17    | r19  |
-| ;?x+y;        | #<program>y=<sign>         | 1 2 7 8 13    | r16  |
-| ;?x+y;        | #<program>y=<factor>       | 1 2 7 8 11    | r11  |
-| ;?x+y;        | #<program>y=<term>         | 1 2 7 8 10    | r8   |
-| ;?x+y;        | #<program>y=<expr>         | 1 2 7 8 52    | s53  |
-| ?x+y;         | #<program>y=<expr>;        | 1 2 7 8 52 53 | r4   |
-| ?x+y;         | #<program> <statement>     | 1 2 6         | r3   |
-| ?x+y;         | #<program>                 | 1 2           | s5   |
-| x+y;          | #<program>?                | 1 2 5         | s19  |
-| +y;           | #<program>?x               | 1 2 5 19      | r23  |
-| +y;           | #<program>?<number>        | 1 2 5 17      | r19  |
-| +y;           | #<program>?<sign>          | 1 2 5 13      | r16  |
-| +y;           | #<program>?<factor>        | 1 2 5 11      | r11  |
-| +y;           | #<program>?<term>          | 1 2 5 10      | r8   |
-| +y;           | #<program>?<expr>          | 1 2 5 9       | s23  |
-| y;            | #<program>?<expr>+         | 1 2 5 9 23    | s19  |
-| ;             | #<program>?<expr>+y        | 1 2 5 9 23 19 | r23  |
-| ;             | #<program>?<expr>+<number> | 1 2 5 9 23 17 | r19  |
-| ;             | #<program>?<expr>+<sign>   | 1 2 5 9 23 13 | r16  |
-| ;             | #<program>?<expr>+<factor> | 1 2 5 9 23 11 | r11  |
-| ;             | #<program>?<expr>+<term>   | 1 2 5 9 23 35 | r6   |
-| ;             | #<program>?<expr>          | 1 2 5 9       | s22  |
-|               | #<program>?<expr>;         | 1 2 5 9 22    | r5   |
-|               | #<program><statement>      | 1 2 6         | r3   |
-|               | #<program>                 | 1 2           | acc  |
+| 剩余输入      | 符号栈                          | 状态栈        | 动作 |
+| ------------- | ------------------------------- | ------------- | ---- |
+| x=1;y=2;?x+y; | #                               | 1             | s4   |
+| =1;y=2;?x+y;  | #x                              | 1 4           | s8   |
+| 1;y=2;?x+y;   | #x=                             | 1 4 8         | s21  |
+| ;y=2;?x+y;    | #x=1                            | 1 4 8 21      | r25  |
+| ;y=2;?x+y;    | #x=\<number\>                   | 1 4 8 17      | r19  |
+| ;y=2;?x+y;    | #x=\<sign\>                     | 1 4 8 13      | r16  |
+| ;y=2;?x+y;    | #x=\<factor\>                   | 1 4 8 11      | r11  |
+| ;y=2;?x+y;    | #x=\<term\>                     | 1 4 8 10      | r8   |
+| ;y=2;?x+y;    | #x=\<expr\>                     | 1 4 8 52      | s53  |
+| y=2;?x+y;     | #x=\<expr\>;                    | 1 4 8 52 53   | r4   |
+| y=2;?x+y;     | #\<statement\>                  | 1 3           | r2   |
+| y=2;?x+y;     | #\<program\>                    | 1 2           | s7   |
+| =2;?x+y;      | #\<program\>y                   | 1 2 7         | s8   |
+| 2;?x+y;       | #\<program\>y=                  | 1 2 7 8       | s21  |
+| ;?x+y;        | #\<program\>y=2                 | 1 2 7 8 21    | r25  |
+| ;?x+y;        | #\<program\>y=\<number\>        | 1 2 7 8 17    | r19  |
+| ;?x+y;        | #\<program\>y=\<sign\>          | 1 2 7 8 13    | r16  |
+| ;?x+y;        | #\<program\>y=\<factor\>        | 1 2 7 8 11    | r11  |
+| ;?x+y;        | #\<program\>y=\<term\>          | 1 2 7 8 10    | r8   |
+| ;?x+y;        | #\<program\>y=\<expr\>          | 1 2 7 8 52    | s53  |
+| ?x+y;         | #\<program\>y=\<expr\>;         | 1 2 7 8 52 53 | r4   |
+| ?x+y;         | #\<program\> \<statement\>      | 1 2 6         | r3   |
+| ?x+y;         | #\<program\>                    | 1 2           | s5   |
+| x+y;          | #\<program\>?                   | 1 2 5         | s19  |
+| +y;           | #\<program\>?x                  | 1 2 5 19      | r23  |
+| +y;           | #\<program\>?\<number\>         | 1 2 5 17      | r19  |
+| +y;           | #\<program\>?\<sign\>           | 1 2 5 13      | r16  |
+| +y;           | #\<program>?\<factor\>          | 1 2 5 11      | r11  |
+| +y;           | #\<program>?\<term\>            | 1 2 5 10      | r8   |
+| +y;           | #\<program>?\<expr\>            | 1 2 5 9       | s23  |
+| y;            | #\<program>?\<expr\>+           | 1 2 5 9 23    | s19  |
+| ;             | #\<program>?\<expr\>+y          | 1 2 5 9 23 19 | r23  |
+| ;             | #\<program>?\<expr\>+\<number\> | 1 2 5 9 23 17 | r19  |
+| ;             | #\<program>?\<expr>+\<sign>     | 1 2 5 9 23 13 | r16  |
+| ;             | #\<program>?\<expr>+\<factor>   | 1 2 5 9 23 11 | r11  |
+| ;             | #\<program>?\<expr>+\<term>     | 1 2 5 9 23 35 | r6   |
+| ;             | #\<program>?\<expr>             | 1 2 5 9       | s22  |
+|               | #\<program>?\<expr>;            | 1 2 5 9 22    | r5   |
+|               | #\<program>\<statement>         | 1 2 6         | r3   |
+|               | #\<program>                     | 1 2           | acc  |
 
 
 
@@ -1104,8 +1134,8 @@ real : 21
 
 初始化语法分析树，根节点设为nullnptr
 定义三个栈，存符号、状态和 新规约出来的非终结符
-	向存符号的栈内压入#，并向存状态的栈内压入0
-	while记号流未遍历完毕
+	向存符号的栈内压入#，并向存状态的栈内压入初始状态
+	while 记号流未遍历完毕
 		根据状态栈栈顶和当前遍历到的终结符进行查表，得到动作
 		if 动作是acc
 			return ;
