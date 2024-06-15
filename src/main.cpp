@@ -46,6 +46,8 @@ int main(int argc, char** argv)
         cout << "-f <filename>: 从文件中输入" << endl;
         cout << "默认: 从命令行中输入" << endl;
 
+        cout << endl << "Details: https://github.com/cfla1638/befcompiler?tab=readme-ov-file#3-%E7%A8%8B%E5%BA%8F%E4%BD%BF%E7%94%A8" << endl;
+
         if (argc == 1)
             getch();
     }
