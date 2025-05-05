@@ -61,31 +61,31 @@ make
 
 词法分析（从命令行中输入）：
 
-![image-20240615153619513](https://cdn.jsdelivr.net/gh/cfla1638/Img/202406151541633.png) 
+![image-20240615153619513](./docs/images/202406151541633.png) 
 
 
 
 词法分析（从文件中输入）：
 
-![image-20240615153732118](https://cdn.jsdelivr.net/gh/cfla1638/Img/202406151541257.png) 
+![image-20240615153732118](./docs/images/202406151541257.png) 
 
 
 
 语法分析（自顶向下）
 
-![image-20240615153859991](https://cdn.jsdelivr.net/gh/cfla1638/Img/202406151541029.png)
+![image-20240615153859991](./docs/images/202406151541029.png)
 
 
 
 语法分析（自底向上）
 
-![image-20240615154008112](https://cdn.jsdelivr.net/gh/cfla1638/Img/202406151541522.png) 
+![image-20240615154008112](./docs/images/202406151541522.png) 
 
 
 
 语义分析：
 
-![image-20240615154110556](https://cdn.jsdelivr.net/gh/cfla1638/Img/202406151541673.png)  
+![image-20240615154110556](./docs/images/202406151541673.png)  
 
 ## 4 代码结构说明
 
